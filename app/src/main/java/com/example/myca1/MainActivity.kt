@@ -2,46 +2,54 @@ package com.example.myca1
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.myca1.ui.theme.MYCA1Theme
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            MYCA1Theme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+        setContentView(R.layout.activity_main)  // XML works now!
+
+        val imgStudent = findViewById<ImageView>(R.id.imgStudent)
+        val edtName = findViewById<EditText>(R.id.edtName)
+        val edtRegNo = findViewById<EditText>(R.id.edtRegNo)
+        val edtTotal = findViewById<EditText>(R.id.edtTotalClasses)
+        val edtAttended = findViewById<EditText>(R.id.edtAttendedClasses)
+        val btnCheck = findViewById<Button>(R.id.btnCheck)
+        val txtResult = findViewById<TextView>(R.id.txtResult)
+
+        btnCheck.setOnClickListener {
+
+            val totalStr = edtTotal.text.toString()
+            val attendedStr = edtAttended.text.toString()
+
+            if (totalStr.isEmpty() || attendedStr.isEmpty()) {
+                Toast.makeText(this, "Please enter all fields!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val total = totalStr.toInt()
+            val attended = attendedStr.toInt()
+
+            if (total == 0) {
+                txtResult.text = "Total classes cannot be zero."
+                txtResult.setTextColor(getColor(android.R.color.holo_red_dark))
+                return@setOnClickListener
+            }
+
+            val percentage = (attended.toDouble() / total) * 100
+
+            if (percentage >= 75) {
+                txtResult.text = "Eligible (Attendance: ${"%.2f".format(percentage)}%)"
+                txtResult.setTextColor(getColor(android.R.color.holo_green_dark))
+            } else {
+                txtResult.text = "Attendance Shortage (Attendance: ${"%.2f".format(percentage)}%)"
+                txtResult.setTextColor(getColor(android.R.color.holo_red_dark))
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MYCA1Theme {
-        Greeting("Android")
     }
 }
